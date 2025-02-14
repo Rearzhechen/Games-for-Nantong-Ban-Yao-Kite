@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>板鹞风筝制作模拟游戏</title>
+    <style>
+
+        body {
+            /* 设置背景图片 */
+            background: url('imageK.jpg') no-repeat center center fixed;
+            -webkit-background-size: cover; /* 用于WebKit引擎（如Safari和旧版Chrome） */
+            -moz-background-size: cover; /* 用于Gecko引擎（如Firefox） */
+            -o-background-size: cover; /* 用于Opera浏览器 */
+            background-size: cover; /* CSS3属性，用于设置背景图片大小覆盖整个元素 */
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            color: rgb(124, 57, 57); /* 根据背景图片调整文字颜色，确保可读性 */
+        }
+
+        .hidden { display: none; }
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .clickable {
+            position: relative;
+            margin: 5px;
+            transition: transform 0.3s ease, border 0.3s ease;
+        }
+        .game-container img { 
+            width: 100px; 
+            height: auto; 
+            cursor: pointer;
+        }
+        .button-container {
+            display: flex;
+            align-items: center;
+        }
+        .button-container button { margin-top: 10px; margin-right: 10px;}
+        
+        /* 新增：按钮旁的文字样式 */
+        .instruction-text {
+            font-size: 1.2em;
+            padding: 10px;
+            background-color: #c70303;
+            border-radius: 5px;
+            box-shadow: 200px 200px 1200px rgba(0,0,0,0.1);
+            max-width: 600px;
+            color: #383838;
+            font-family: Arial, sans-serif;
+            margin-right: 20px;
+        }
+
+        /* 自定义消息区域样式 */
+        #messageArea, #initialMessage {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            color: #2e1414;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 消息文本样式 */
+        #messageArea p, #initialMessage p {
+            margin: 0;
+            padding: 10px;
+            background-color: #4e0707;
+            border-radius: 500px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* 图片名称提示 */
+        .img-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .clickable:hover .img-name {
+            opacity: 1;
+        }
+
+        /* 选中状态的边框 */
+        .selected {
+            border: 3px solid rgb(251, 255, 0);
+            padding: 3px;
+        }
+
+        /* 鼠标悬停时放大图片 */
+        .clickable:hover {
+            transform: scale(1.2); /* 放大到原来的1.2倍 */
+        }
+
+        /* 右下角按钮样式 */
+        #infoButton {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+        }
+
+        /* 底部链接样式 */
+        footer {
+            text-align: center;
+            margin-top: 300px;
+        }
+
+        /* 烟花效果（示例） */
+        .fireworks-show {
+            animation: fireworks 2s ease-out forwards;
+        }
+
+        @keyframes fireworks {
+            0% { opacity: 0; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* 如果需要提高可读性，可以为包含文字的容器添加半透明背景 */
+        .instruction-text, #messageArea, #initialMessage, .button-container button {
+            background-color: rgba(0, 0, 0, 0.7); /* 半透明黑色背景 */
+            border-radius: 5px;
+            padding: 10px;
+            color: rgb(244, 165, 165);
+            margin-top: 10px;
+        }
+        
+        /* 确保按钮在背景上的可见度 */
+        .button-container button {
+            color: rgb(255, 255, 255);
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 初始显示的文字 -->
+<div id="initialMessage">
+    <p>欢迎来到板鹞风筝制作模拟游戏！点击右下角的制作详情，根据信息，选择需要的材料并结合相应的技术，尝试制作属于你的板鹞风筝吧！</p>
+</div>
+
+<div class="game-container">
+    <!-- 初始显示的五张图片 -->
+    <div class="clickable" onclick="toggleSelection('A')">
+        <img id="imgA" src="imageA.jpg" alt="Image A" title="图片 A"/>
+        <div class="img-name">竹管</div>
+    </div>
+    <div class="clickable" onclick="toggleSelection('B')">
+        <img id="imgB" src="imageB.jpg" alt="Image B" title="图片 B"/>
+        <div class="img-name">棉线</div>
+    </div>
+    <div class="clickable" onclick="toggleSelection('C')">
+        <img id="imgC" src="imageC.jpg" alt="Image C" title="图片 C"/>
+        <div class="img-name">棉布</div>
+    </div>
+    <div class="clickable" onclick="toggleSelection('D')">
+        <img id="imgD" src="imageD.jpg" alt="Image D" title="图片 D"/>
+        <div class="img-name">鹞尾（蒲草制成）</div>
+    </div>
+    <div class="clickable" onclick="toggleSelection('E')">
+        <img id="imgE" src="imageE.jpg" alt="Image E" title="图片 E"/>
+        <div class="img-name">哨口</div>
+    </div>
+
+    <!-- 隐藏的图片F, G, H, I, J -->
+    <div id="imgFContainer" class="hidden clickable" onclick="toggleSelection('F')">
+        <img id="imgF" src="imageF.jpg" alt="Image F" title="图片 F"/>
+        <div class="img-name hidden">竹管扎好的风筝骨架</div>
+    </div>
+    <div id="imgGContainer" class="hidden clickable" onclick="toggleSelection('G')">
+        <img id="imgG" src="imageG.jpg" alt="Image G" title="图片 G"/>
+        <div class="img-name hidden">绘制好的宣纸</div>
+    </div>
+    <div id="imgHContainer" class="hidden clickable" onclick="toggleSelection('H')">
+        <img id="imgH" src="imageH.jpg" alt="Image H" title="图片 H"/>
+        <div class="img-name hidden">将棉布糊裱在骨架上</div>
+    </div>
+    <div id="imgIContainer" class="hidden clickable" onclick="toggleSelection('I')">
+        <img id="imgI" src="imageI.jpg" alt="Image I" title="图片 I"/>
+        <div class="img-name hidden">装上哨口</div>
+    </div>
+    <div id="imgJContainer" class="hidden clickable fireworks" onclick="toggleSelection('J')">
+        <img id="imgJ" src="imageJ.jpg" alt="Image J" title="图片 J"/>
+        <div class="img-name hidden">装上鹞尾</div>
+    </div>
+
+    
+
+    <!-- 在四个按钮的左侧显示的一段文字 -->
+    <div class="instruction-text">
+        <p>南通板鹞风筝的四大技巧，需要时请点击：</p>
+    </div>
+
+    <!-- 按钮 -->
+    <div class="button-container">
+        <button id="btnA">扎</button>
+        <button id="btnB">糊</button>
+        <button id="btnC">绘</button>
+        <button id="btnD">放</button>
+    </div>
+    
+    <!-- 显示消息的区域 -->
+    <div id="messageArea"></div>
+
+    <!-- 右下角按钮 -->
+    <button id="infoButton">制作详情</button>
+    <div id="infoText" style="display:none;">这是一个关于风筝制作技艺的游戏示例。<br>南通板鹞风筝的制作流程是一个复杂而精细的过程，它融合了扎制、绘画、糊裱和雕刻等多种工艺。以下是简化的南通板鹞风筝制作流程：
+
+        <br>1. 选材：选择适合的竹材作为骨架材料，通常选用五年以上的毛竹，经过劈杆、晾晒等处理以确保其不易变形。
+        
+        <br>2. <b><i>扎</i></b>制骨架：
+        <br>对竹子进行加热调直，并打磨至光滑。
+        <br>根据设计尺寸裁剪竹条，并将用棉线它们精确地<b><i>扎制</i></b>成风筝的基本形状，如六角形或八角形。
+        <br>骨架要保证对称和平整，以确保飞行稳定。
+        
+        <br>3. <b><i>绘</i></b>制图案：在风筝表面（通常是牛皮纸、棉布或丝绸）上绘制传统图案，如“八仙过海”、“凤戏牡丹”等。
+        
+        <br>4. <b><<i>糊</i></b>裱风筝面：使用粘合剂将绘好的面料固定在风筝骨架上，确保表面平整无皱。
+        
+        <br>5. 哨口制作与安装：
+        <br>制作哨口，这包括筒型哨和球型哨，用竹片或葫芦等材料雕制而成。
+        <br>将哨口合理布局并牢固地<b><i>扎</i></b>在风筝上，使其能够在空中发出悦耳的声音。
+        
+        <br>6. 安装鹞尾：用蒲草或漏草搓制成绳索状的尾巴，<b><i>扎</i></b>在风筝上增加风筝的稳定性。
+        <br>7.最后，将风筝<b><i>放</i></b>飞，享受风筝飞翔的乐趣。
+        
+        <br>每个步骤都需要匠人的精心操作和丰富经验，这也是南通板鹞风筝能够成为非物质文化遗产的重要原因之一。</div>
+</div>
+
+<footer>
+    <a href="https://baike.baidu.com/item/%E9%A3%8E%E7%AD%9D%E5%88%B6%E4%BD%9C%E6%8A%80%E8%89%BA%EF%BC%88%E5%8D%97%E9%80%9A%E6%9D%BF%E9%B9%9E%E9%A3%8E%E7%AD%9D%EF%BC%89/49723558" target="_blank">了解更多关于南通风筝制作技艺</a>
+</footer>
+
+<script>
+    let selectedImages = [];
+    const messageArea = document.getElementById('messageArea');
+    const initialMessage = document.getElementById('initialMessage');
+
+    function toggleSelection(id) {
+        const imgElement = document.getElementById('img' + id);
+        if (imgElement.classList.contains('selected')) {
+            imgElement.classList.remove('selected');
+            selectedImages = selectedImages.filter(i => i !== id);
+        } else {
+            imgElement.classList.add('selected');
+            selectedImages.push(id);
+        }
+    }
+
+    function showMessage(message) {
+        messageArea.innerHTML = '';
+        const p = document.createElement("p");
+        p.textContent = message;
+        messageArea.appendChild(p);
+    }
+
+    // 设置初始信息在2000秒后消失
+    setTimeout(() => {
+        initialMessage.style.display = 'none';
+    }, 2000000);
+
+    document.getElementById('btnA').addEventListener('click', () => {
+        if (selectedImages.includes('A') && selectedImages.includes('B')) {
+            document.getElementById('imgFContainer').classList.remove('hidden');
+            document.querySelector('#imgFContainer .img-name').classList.remove('hidden');
+            showMessage('你成功搭出了风筝骨架！继续下一步吧！');
+            selectedImages = [];
+        } else if (selectedImages.includes('H') && selectedImages.includes('E')) {
+            document.getElementById('imgIContainer').classList.remove('hidden');
+            document.querySelector('#imgIContainer .img-name').classList.remove('hidden');
+            showMessage('你成功装上了哨口！继续下一步吧！');
+            selectedImages = [];
+        } else if (selectedImages.includes('D') && selectedImages.includes('I')) {
+            document.getElementById('imgJContainer').classList.remove('hidden');
+            document.querySelector('#imgJContainer .img-name').classList.remove('hidden');
+            showMessage('你成功装上了鹞尾！继续下一步吧！');
+            selectedImages = [];
+            setTimeout(() => document.querySelector('.fireworks').classList.add('fireworks-show'), 5);
+        }
+    });
+
+    document.getElementById('btnC').addEventListener('click', () => {
+        if (selectedImages.includes('C')) {
+            document.getElementById('imgGContainer').classList.remove('hidden');
+            document.querySelector('#imgGContainer .img-name').classList.remove('hidden');
+            showMessage('你成功绘制了宣纸！继续下一步吧！');
+            selectedImages = [];
+        }
+    });
+
+    document.getElementById('btnB').addEventListener('click', () => {
+        if (selectedImages.includes('F') && selectedImages.includes('G')) {
+            document.getElementById('imgHContainer').classList.remove('hidden');
+            document.querySelector('#imgHContainer .img-name').classList.remove('hidden');
+            showMessage('你成功糊裱了风筝面！继续下一步吧！');
+            selectedImages = [];
+        }
+    });
+
+    document.getElementById('btnD').addEventListener('click', () => {
+        if (document.getElementById('imgJContainer').classList.contains('fireworks-show')) {
+            showMessage('恭喜你，游戏成功！你制做出了风筝并成功放飞！为你献上烟花祝贺！希望这个游戏能让你对风筝制作有新的认识，并带给你快乐！');
+        }
+    });
+
+    document.getElementById('infoButton').addEventListener('click', () => {
+        const infoText = document.getElementById('infoText');
+        infoText.style.display = infoText.style.display === 'none' ? 'block' : 'none';
+    });
+</script>
+
+</body>
+</html>
